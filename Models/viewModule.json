@@ -1,0 +1,14 @@
+{
+	id: "{ModuleName}",
+	rootClass: "{ROOT_CLASS}",
+	rootInit: "{ROOT_INITIALIZE}",
+	descr: "Description"
+
+	rootVC: "{ROOT_VC}",
+	strongDeps: [
+		HTTP, SIP
+	],
+	weakDeps: [
+		RTSP
+	]
+}

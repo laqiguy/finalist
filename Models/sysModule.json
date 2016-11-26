@@ -1,0 +1,9 @@
+{
+	id: "{SM_NAME}",
+	rootClass: "{ROOT_CLASS}",
+	rootInit: "{ROOT_INITIALIZE}",
+	descr: "Description",
+	
+	protocolName: "{SM_PROTOCOL_NAME}",
+	protocolFile: "{SM_PROTOCOL_FILENAME}"
+}

@@ -1,0 +1,69 @@
+cocoapods.org
+
+Pod file - спецификация, которая описывает зависимости target'ов одного или нескольких XCode проектов
+
+platform :ios, '9.0'
+inhibit_all_warnings!
+
+target 'MyApp' do
+  pod 'ObjectiveSugar', '~> 0.5'
+
+  target "MyAppTests" do
+    inherit! :search_paths
+    pod 'OCMock', '~> 2.0.1'
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    puts "#{target.name}"
+  end
+end
+
+
+
+CocoaPods is an application level dependency manager for the Objective-C, Swift and any other languages that run on the Objective-C runtime, such as RubyMotion,[1] that provides a standard format for managing external libraries. It was developed by Eloy Durán and Fabio Pelosin, who continue to manage the project with the help and contributions of many others.[2] They began development in August 2011[3] and made the first public release[4] on September 1, 2011. CocoaPods is strongly inspired by a combination of the Ruby projects RubyGems and Bundler.
+
+CocoaPods focuses on source-based distribution of third party code and automatic integration into Xcode projects.
+
+CocoaPods runs from the command line and is also integrated in JetBrains' AppCode integrated development environment.[5] It installs dependencies (e.g. libraries) for an application by specification of dependencies rather than manual copying source files.[6] Besides installing from many different sources, a “master” spec repository—containing metadata for many Open-Source libraries—is maintained as a git repository and hosted on GitHub.[7] Over 3000 libraries are currently available for use.[8]
+
+
+// один из самых используемых иснтрументов управления зависимостями при разработке любых приложений для iOS, macOS, tvOS и watchOS. 
+
+Описание:
+
+CocoaPods - это менеджер зависимостей уровня приложений для Objective-С, Swift и любый других языков, которые могут работать в Objective-C Runtime, такие как C++, C, RubyMotion и другие. Он был разработан Eloy Durán и Fabio Pelosin, которые до сих пор продолжают управлять проектом не без помощи сообщества. Его разработка началась в августе 2011 году и первый публичный релиз был выпущен уже в сентябре того же года. В мае 2016 года проект дошел до релизной версии 1.0. Так же было выпущено десктопное приложение. Проект CocoaPods был вдохновлен комбинецией менеджера пакетов для Ruby RubyGems и проектом Bundler.
+
+CocoaPods софкусирован на дистрибюции проектов с открытым исходным кодом и интеграции их в Xcode проекты.
+
+С CocoaPods можно работать несколькими способами:
+	- Напрямую из командной строки
+	- В IDE таких как XCode или JetBrains AppCode в виде плагинов
+	- В отдельном десктопном приложении
+
+В каком виде представлены "пакеты":
+
+Specification
+A specification describes a version of Pod library. It includes details about where the source should be fetched from, what files to use, the build settings to apply, and other general metadata such as its name, version, and description.
+
+Спецификация:
+Спецификация описывает версию Pod библиотеки, Она включает в себя данные о том, откуда нужно подгружать исходный код, какие файлы использовать, какие параметры сборки устанавливать и другие метаданные такие как имя библиотеки, ее версия и описание.
+
+В файле спкцификации много возможных полей, но не все из них одинаково полезны. Рассмотрим толкьо некоторые из них
+  	spec.version - поле, определяющее номер версии Pod библиотеки. Пример: '3.1.0'
+  	spec.source  - содержит в себе информацию о пути к репозиторию, а так же номеру верисс библиотеки в репозитории. Имеет вид: { :git => 'https://github.com/tonymillion/Reachability.git', :tag => 'v3.1.0' }
+	spec.source_files - регулярное выражение, описывающее все необходимые файлы для библиотеки. Пример: 'Reachability/common/*.swift'
+ 	spec.{OS}.source_files - регулярное выражение, описывающее все необходимые файлы для библиотеки для определенной платформы. {OS} может быть ios, osx. Пример: 'Reachability/ios/*.swift', 'Reachability/extensions/*.swift'
+  	spec.framework - Список системных фреймворков необходимых для этой библиотеки. Пример: 'SystemConfiguration'
+  	spec.{OS}.framework - Список системных фреймворков необходимых для этой библиотеки. {OS} может быть ios, osx. Пример: 'UIKit', 'Foundation'
+  	spec.dependency - В каждом таком поле указываются зависимости текущей библиотеки от других. Например: 'RestKit/CoreData', '~> 0.20.0'
+  	spec.weak_framework - Список "слабых" сиситемных фрейморков. Например 'Twitter'. Этот фреймфорк появился впервые в iOS в версии 5.0. Если бы вы пытались собрать проект Cocoapods для версии 4.2, то компилятор будет ругаться, что не может найти такой фреймворк. Поэтому можно его указать как weak_dependency. И если в текущей версии iOS/MacOsX нет этого фрейворка, то он просто не будет указан в заголовочных файлах. А код уже должен сам обработать его отсутствие.
+  	spec.compiler_flags = '-Wno-incomplete-implementation -Wno-missing-prototypes'
+
+	spec.subspec - Тоже самое описание спецификации, но только длля "под"-библиотеки. Все поля, которые есть в спецификации, будут и здесь. Пример:
+	s.subspec 'Core' do |cs|
+		cs.dependency 'RestKit/ObjectMapping'
+		cs.dependency 'RestKit/Network'
+		cs.dependency 'RestKit/CoreData'
+	end
