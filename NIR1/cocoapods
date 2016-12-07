@@ -67,3 +67,33 @@ A specification describes a version of Pod library. It includes details about wh
 		cs.dependency 'RestKit/Network'
 		cs.dependency 'RestKit/CoreData'
 	end
+
+
+В каком виде представлено приложение и как в него интегрируются "пакеты":
+
+The Podfile is a specification that describes the dependencies of the targets of one or more Xcode projects
+
+A target specifies a product to build and contains the instructions for building the product from a set of files in a project or workspace. A target defines a single product; it organizes the inputs into the build system—the source files and instructions for processing those source files—required to build that product. Projects can contain one or more targets, each of which produces one product.
+
+Podfile - это спецификация, которая пописывает зависимости target'ов одного или более проекта Xcode. Target определяет продукт сборки, который содержит в себе иснструкции по компиляции из набора файлов проекта(project) или workspace'а. Target определяет один продукт; он организовывает входные данные для системы сборки - исходные файлы и инструкции для обработки этих файлов, необходимые для для сборки продукта. Проекты могут содержать один или более target'ов, который соответствует одному продукту. (Как же отвратительно это звучит на русском)
+
+
+platform :ios, '9.0'
+inhibit_all_warnings!
+
+target 'MyApp' do
+  pod 'ObjectiveSugar', '~> 0.5'
+
+  target "MyAppTests" do
+    inherit! :search_paths
+    pod 'OCMock', '~> 2.0.1'
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    puts "#{target.name}"
+  end
+end
+
+
