@@ -1,14 +1,30 @@
 {
-	id: "{ModuleName}",
-	rootClass: "{ROOT_CLASS}",
-	rootInit: "{ROOT_INITIALIZE}",
-	descr: "Description"
+	"id": "{ModuleName}",
+	"description": "Description",
+	"type": "{view/viewRoot/sys}",
+	 
+	"rootClass": "{ROOT_CLASS}",
+	"rootInitialize": "{ROOT_INITIALIZE}",
 
-	rootVC: "{ROOT_VC}",
-	strongDeps: [
-		HTTP, SIP
+	"protocolName": "{SM_PROTOCOL_NAME}",
+	"protocolUrl": "{SM_PROTOCOL_URL}",
+
+	"strongDependencies": [
+		{"HTTP": "http"},
+		{"SIP": "sip"}
 	],
-	weakDeps: [
-		RTSP
+	"weakDependencies": [
+		{"rtsp": "RTSP"}
 	]
 }
+
+/*
+id - уникальное название модуля
+isRoot - флаг, является для модуль "первичным". В одной конфигурации может быть только один первичный модуль
+rootClass - имя root-класса. rootClass всегда наследуется от протокола Module
+rootInitialize - имя процедуры инициализации модуля, который нужно вызывать после протягивания зависимостей к полям экземпляра класса
+description - описание модуля.
+
+strongDependencies - 
+weakDependencies - 
+*/

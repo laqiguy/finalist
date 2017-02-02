@@ -1,9 +1,28 @@
 {
-	id: "{SM_NAME}",
-	rootClass: "{ROOT_CLASS}",
-	rootInit: "{ROOT_INITIALIZE}",
-	descr: "Description",
+	"id": "{SM_NAME}",
+	"type": "{view/viewRoot/sys}", 
+	"rootClass": "{ROOT_CLASS}",
+	"rootInitialize": "{ROOT_INITIALIZE}",
+	"description": "Description",
 	
-	protocolName: "{SM_PROTOCOL_NAME}",
-	protocolFile: "{SM_PROTOCOL_FILENAME}"
+	"protocolName": "{SM_PROTOCOL_NAME}",
+	"protocolUrl": "{SM_PROTOCOL_URL}",
+
+	"strongDependencies": [
+		{"HTTP": "http"},
+		{"SIP": "sip"}
+	],
+	"weakDependencies": [
+		{"rtsp": "RTSP"}
+	]
 }
+
+/*
+id - уникальное имя модуля
+rootClass - имя root-класса. 
+rootInitialize - имя процедуры инициализации модуля, который нужно вызывать после протягивания зависимостей к полям экземпляра класса
+description - описание модуля.
+
+protocolName - имя протокола для доступа к параметрам и методам модуля извне
+protocolFile - путь до файла протокола
+*/
