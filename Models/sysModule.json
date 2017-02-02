@@ -1,9 +1,10 @@
 {
 	"id": "{SM_NAME}",
+	"description": "Description",
 	"type": "{view/viewRoot/sys}", 
+	
 	"rootClass": "{ROOT_CLASS}",
 	"rootInitialize": "{ROOT_INITIALIZE}",
-	"description": "Description",
 	
 	"protocolName": "{SM_PROTOCOL_NAME}",
 	"protocolUrl": "{SM_PROTOCOL_URL}",

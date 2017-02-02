@@ -2,7 +2,7 @@
 	"id": "{ModuleName}",
 	"description": "Description",
 	"type": "{view/viewRoot/sys}",
-	 
+
 	"rootClass": "{ROOT_CLASS}",
 	"rootInitialize": "{ROOT_INITIALIZE}",
 
@@ -25,6 +25,6 @@ rootClass - имя root-класса. rootClass всегда наследует�
 rootInitialize - имя процедуры инициализации модуля, который нужно вызывать после протягивания зависимостей к полям экземпляра класса
 description - описание модуля.
 
-strongDependencies - 
-weakDependencies - 
+strongDependencies - зависимочти, обязательные для работы модуля.
+weakDependencies - зависимости, необязательные. 
 */
