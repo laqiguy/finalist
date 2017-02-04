@@ -1,7 +1,7 @@
 {
-	"id": "{ModuleName}",
+	"name": "{ModuleName}",
 	"description": "Description",
-	"type": "{view/viewRoot/sys}",
+	"type": "{view/sys}",
 
 	"rootClass": "{ROOT_CLASS}",
 	"rootInitialize": "{ROOT_INITIALIZE}",
@@ -10,13 +10,13 @@
 	"protocolUrl": "{SM_PROTOCOL_URL}",
 
 	"strongDependencies": [
-		{"HTTP": "http"},
-		{"SIP": "sip"}
+		"HTTP",
+		"SIP"
 	],
 	"weakDependencies": [
-		{"rtsp": "RTSP"}
+		"RTSP"
 	]
-}
+} 
 
 /*
 id - уникальное название модуля
@@ -27,4 +27,10 @@ description - описание модуля.
 
 strongDependencies - зависимочти, обязательные для работы модуля.
 weakDependencies - зависимости, необязательные. 
+*/
+
+/*
+
+o	viewroot – обычный UI-модуль. Единственная его особенность в том, что является корневым. Т.е. при старте приложения этот модуль инициализируется первым и сразу показывается на экране. Выделение такого отдельного типа необходимо для того, что бы знать с 
+
 */
