@@ -1,0 +1,7 @@
+{
+	"modules": ["HTTP",
+		"RTSP",
+		"SIP",
+		"MainScreen"],
+	"rootModule": "MainScreen"
+}
