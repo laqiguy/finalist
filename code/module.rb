@@ -1,61 +1,9 @@
 #!/usr/bin/env ruby
 
+require_relative 'ModuleClass'
 require 'find'
 require 'set'
 require 'json'
-
-class Module
-
-	attr_accessor :name,:description,:type,:rootClass,:rootInitialize,:protocolName,:protocolUrl,:strongDependencies,:weakDependencies
-
-	def initialize()
-		@name = ""
-		@description = "My brand new module"
-		@type = ""
-		@rootClass = ""
-		@rootInitialize = ""
-		@protocolName = ""
-		@protocolUrl = ""
-		@strongDependencies = Hash.new()
-		@weakDependencies = Hash.new()
-	end
-
-	def fill(json)
-      	@name = json["name"]
-		@description = json["name"]
-		@type = json["name"]
-		@rootClass = json["name"]
-		@rootInitialize = json["name"]
-		@protocolName = json["name"] 
-		@protocolUrl = json["name"] 
-		@strongDependencies = json["name"]
-		@weakDependencies = json["name"]
-
-      	@name ||= ""
-		@description ||= ""
-		@type ||= ""
-		@rootClass ||= ""
-		@rootInitialize ||= ""
-		@protocolName ||= ""
-		@protocolUrl ||= ""
-		@strongDependencies ||=  Hash.new()
-		@weakDependencies ||=  Hash.new()
-	end
-
-	def to_json()
-		mod = Hash.new()
-		mod["name"] = @name
-		mod["description"] = @description
-		mod["type"] = @type
-		mod["rootClass"] = @rootClass
-		mod["rootInitialize"] = @rootInitialize
-		mod["protocolName"] = @protocolName
-		mod["protocolUrl"] = @protocolUrl
-		mod["strongDependencies"] = @strongDependencies
-		mod["weakDependencies"] = @weakDependencies
-		return mod
-	end
-end
 
 def findModule (dir)
 	modulepaths = []
@@ -67,7 +15,7 @@ def findModule (dir)
 			puts modulepaths[0]
 			return modulepaths[0]
 		else
-			puts "Which file? (type 'q' to exit)"
+			puts "Which file?"
 			for i in 0..modulepaths.count-1
 				puts i.to_s + ". " + modulepaths[i]
 			end
@@ -87,49 +35,70 @@ end
 def findPodXproj (dir)
 	podPaths = []
 	Find.find(dir) do |path|
-		podPaths << path if path =~ /Podfile/
+		podPaths << path if path =~ /.*\.podspec$/
 	end
 	xPaths = []
 	Find.find(dir) do |path|
-		xPaths << path if path =~ /.*\.(xcodeproj|xcworkspace)$/ && !xPaths.include?(path)
+		xPaths << path if path =~ /_Pods\.xcodeproj|$/ && !xPaths.include?(path)
 	end
 	if podPaths.count > 0 then 
-		if podPaths.count == 1 then
-			podfile = podPaths[0]
-			podArray = podfile.split("/")
-			podFolder = podArray[0..podArray.count-2].join("/")
-			projArray = []
-			for path in xPaths do
-				xarr = path.split("/")
-				xFolder = xarr[0..xarr.count-2].join("/")
-				if xFolder == podFolder then
-					projArray << path
-				end
+		podfile = ""
+		if podPaths.count > 1 then
+			puts "Which podspec file is main?"
+			for i in 0..podPaths.count-1
+				puts i.to_s + ". " + podPaths[i]
 			end
-			return podFolder if projArray.count != 0 
+			input = STDIN.gets.chomp
+			b = Integer(input) rescue -1
+			while b < 0 || b >= podPaths.count do
+				input = STDIN.gets.chomp
+				b = Integer(input) rescue -1
+			end
+			podfile = podPaths[b] 
 		else
-			puts "Error. Podfile is only one for one project"
+			podfile = podPaths[0]
 		end
+		podArray = podfile.split("/")
+		podFolder = podArray[0..podArray.count-2].join("/")
+		projArray = []
+		for path in xPaths do
+			xarr = path.split("/")
+			xFolder = xarr[0..xarr.count-2].join("/")
+			if xFolder == podFolder then
+				projArray << path
+			end
+		end
+		return podfile if projArray.count != 0
 	end
-
 	return nil
 end
 
 def install(dir)
-	# puts findModule(dir)
+	folderPath = findPodXproj(dir)
+	modulePath = findModule(dir)
+	if folderPath != nil && modulePath != nil then
+		# Server needed
+	end
 end
 
 def update(dir)
+	folderPath = findPodXproj(dir)
+	modulePath = findModule(dir)
+	if folderPath != nil && modulePath != nil then
+		# Server needed
+	end
 end
 
 def create(dir)
 	folderPath = findPodXproj(dir)
+	folderPath = folderPath.split("/")[0..folderPath.split("/").count-2].join("/")
+	folderName = folderPath.split("/")[folderPath.split("/").count-2]
 	if folderPath != nil then
 		podfile = folderPath + "/Podfile"
 		mod = Module.new()
-		puts "Write you module name:"
+		puts "Write you module name (enter will set name \"#{folderName}\"): "
 		name = STDIN.gets.chomp
-		mod.name = name
+		mod.name = name == "" ? folderName : name
 		out_file = File.new(folderPath + "/" + name + ".module", "w")
 		puts "Module type: 0. System, 1. View"
 		input = STDIN.gets.chomp
@@ -146,10 +115,24 @@ def create(dir)
 end
 
 def validate(dir)
-	puts 4
+	podspecPath = findPodXproj(dir)
+	folderPath = podspecPath.split("/")[0..podspecPath.split("/").count-2].join("/")
+	folderName = folderPath.split("/").last
+	modulePath = findModule(dir)
+	if folderPath != nil && modulePath != nil then
+		mod = Module.new()
+		# file = File.read(modulePath)
+		# data_hash = JSON.parse(file)
+		# mod.fill(data_hash)
+		# if mod.protocolName != "" && mod.protocolUrl != "" then
+
+		# end
+
+		# Возможно сервер.
+	end
 end
 
-arg = "empty"
+arg = ""
 
 if ARGV.count >= 1 then
 	arg = ARGV[0]
