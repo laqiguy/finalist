@@ -2,6 +2,60 @@
 
 require 'find'
 require 'set'
+require 'json'
+
+class Module
+
+	attr_accessor :name,:description,:type,:rootClass,:rootInitialize,:protocolName,:protocolUrl,:strongDependencies,:weakDependencies
+
+	def initialize()
+		@name = ""
+		@description = "My brand new module"
+		@type = ""
+		@rootClass = ""
+		@rootInitialize = ""
+		@protocolName = ""
+		@protocolUrl = ""
+		@strongDependencies = Hash.new()
+		@weakDependencies = Hash.new()
+	end
+
+	def fill(json)
+      	@name = json["name"]
+		@description = json["name"]
+		@type = json["name"]
+		@rootClass = json["name"]
+		@rootInitialize = json["name"]
+		@protocolName = json["name"] 
+		@protocolUrl = json["name"] 
+		@strongDependencies = json["name"]
+		@weakDependencies = json["name"]
+
+      	@name ||= ""
+		@description ||= ""
+		@type ||= ""
+		@rootClass ||= ""
+		@rootInitialize ||= ""
+		@protocolName ||= ""
+		@protocolUrl ||= ""
+		@strongDependencies ||=  Hash.new()
+		@weakDependencies ||=  Hash.new()
+	end
+
+	def to_json()
+		mod = Hash.new()
+		mod["name"] = @name
+		mod["description"] = @description
+		mod["type"] = @type
+		mod["rootClass"] = @rootClass
+		mod["rootInitialize"] = @rootInitialize
+		mod["protocolName"] = @protocolName
+		mod["protocolUrl"] = @protocolUrl
+		mod["strongDependencies"] = @strongDependencies
+		mod["weakDependencies"] = @weakDependencies
+		return mod
+	end
+end
 
 def findModule (dir)
 	modulepaths = []
@@ -52,7 +106,7 @@ def findPodXproj (dir)
 					projArray << path
 				end
 			end
-			return podfile if projArray.count != 0 
+			return podFolder if projArray.count != 0 
 		else
 			puts "Error. Podfile is only one for one project"
 		end
@@ -63,14 +117,32 @@ end
 
 def install(dir)
 	# puts findModule(dir)
-	puts findPodXproj(dir)
 end
 
 def update(dir)
 end
 
-def create(dir, args)
-	puts args
+def create(dir)
+	folderPath = findPodXproj(dir)
+	if folderPath != nil then
+		podfile = folderPath + "/Podfile"
+		mod = Module.new()
+		puts "Write you module name:"
+		name = STDIN.gets.chomp
+		mod.name = name
+		out_file = File.new(folderPath + "/" + name + ".module", "w")
+		puts "Module type: 0. System, 1. View"
+		input = STDIN.gets.chomp
+		typenum = Integer(input) rescue -1
+		while typenum != 0 && typenum != 1 do
+			input = STDIN.gets.chomp
+			b = Integer(input) rescue -1
+		end
+		type = typenum == 0 ? "sys" : "view"
+		mod.type = type		
+		out_file.puts(mod.to_json)
+		out_file.close
+	end
 end
 
 def validate(dir)
@@ -91,7 +163,7 @@ when "install" then
 when "update" then
 	update(dir)
 when "create" then
-	create(dir, ARGV)
+	create(dir)
 when "validate" then
 	validate(dir)
 else
