@@ -2,7 +2,6 @@
 
 require_relative 'ModuleClass'
 require 'find'
-require 'set'
 require 'json'
 
 def findModule (dir)
@@ -115,20 +114,15 @@ def create(dir)
 end
 
 def validate(dir)
-	podspecPath = findPodXproj(dir)
-	folderPath = podspecPath.split("/")[0..podspecPath.split("/").count-2].join("/")
-	folderName = folderPath.split("/").last
 	modulePath = findModule(dir)
-	if folderPath != nil && modulePath != nil then
+	if modulePath != nil then
 		mod = Module.new()
-		# file = File.read(modulePath)
-		# data_hash = JSON.parse(file)
-		# mod.fill(data_hash)
-		# if mod.protocolName != "" && mod.protocolUrl != "" then
-
-		# end
-
-		# Возможно сервер.
+		file = File.read(modulePath)
+		data_hash = JSON.parse(file)
+		mod.fill(data_hash)
+		if mod.name != "" then
+			#Запрос к серверу. Сообщение валидации
+		end
 	end
 end
 

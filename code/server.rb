@@ -41,14 +41,3 @@ server.mount '/app', AppManifest
 trap 'INT' do server.shutdown end
 
 server.start
-
-CREATE TABLE main.module(
-	ID INT NOT NULL,
-	NAME TEXT NOT NULL,
-	VERSION TEXT,
-	COMMIT TEXT,
-	IS_CURRENT INT NOT NULL,
-	PATH_TO_MAN TEXT,
-	PATH_TO_MOD TEXT,
-	PRIMARY KEY (ID, NAME)
-);
