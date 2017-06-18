@@ -6,7 +6,16 @@ require 'json'
 
 class Module
 
-	attr_accessor :name,:description,:type,:rootClass,:rootInitialize,:protocolName,:protocolUrl,:strongDependencies,:weakDependencies
+	attr_accessor :name,
+	:description,
+	:type,
+	:rootClass,
+	:rootInitialize,
+	:protocolName,
+	:protocolUrl,
+	:mockUrl,
+	:strongDependencies,
+	:weakDependencies
 
 	def initialize()
 		@name = ""
@@ -16,6 +25,7 @@ class Module
 		@rootInitialize = ""
 		@protocolName = ""
 		@protocolUrl = ""
+		@mockUrl = nil
 		@strongDependencies = Hash.new()
 		@weakDependencies = Hash.new()
 	end
@@ -51,6 +61,7 @@ class Module
 		mod["rootInitialize"] = @rootInitialize
 		mod["protocolName"] = @protocolName
 		mod["protocolUrl"] = @protocolUrl
+		mod["mockUrl"] = @mockUrl
 		mod["strongDependencies"] = @strongDependencies
 		mod["weakDependencies"] = @weakDependencies
 		return mod.to_json()
