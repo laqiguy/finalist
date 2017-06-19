@@ -1,15 +1,12 @@
 #!/usr/bin/env ruby
 
-require 'find'
-require 'set'
-require 'json'
-
 class Module
 
 	attr_accessor :name,
 	:description,
 	:type,
 	:rootClass,
+	:rootUrl,
 	:rootInitialize,
 	:protocolName,
 	:protocolUrl,
@@ -22,6 +19,7 @@ class Module
 		@description = "My brand new module"
 		@type = ""
 		@rootClass = ""
+		@rootUrl = ""
 		@rootInitialize = ""
 		@protocolName = ""
 		@protocolUrl = ""
@@ -32,18 +30,21 @@ class Module
 
 	def fill(json)
       	@name = json["name"]
-		@description = json["name"]
-		@type = json["name"]
-		@rootClass = json["name"]
-		@rootInitialize = json["name"]
-		@protocolName = json["name"] 
-		@protocolUrl = json["name"] 
-		@strongDependencies = json["name"]
-		@weakDependencies = json["name"]
+		@description = json["description"]
+		@type = json["type"]
+		@rootClass = json["rootClass"]
+		@rootUrl = json["rootUrl"]
+		@rootInitialize = json["rootInitialize"]
+		@protocolName = json["protocolName"] 
+		@protocolUrl = json["protocolUrl"] 
+		@mockUrl = json["mockUrl"]
+		@strongDependencies = json["strongDependencies"]
+		@weakDependencies = json["weakDependencies"]
 
       	@name ||= ""
 		@description ||= ""
 		@type ||= ""
+		@rootClass ||= ""
 		@rootClass ||= ""
 		@rootInitialize ||= ""
 		@protocolName ||= ""
@@ -58,6 +59,7 @@ class Module
 		mod["description"] = @description
 		mod["type"] = @type
 		mod["rootClass"] = @rootClass
+		mod["rootUrl"] = @rootUrl
 		mod["rootInitialize"] = @rootInitialize
 		mod["protocolName"] = @protocolName
 		mod["protocolUrl"] = @protocolUrl
@@ -65,5 +67,9 @@ class Module
 		mod["strongDependencies"] = @strongDependencies
 		mod["weakDependencies"] = @weakDependencies
 		return mod.to_json()
+	end
+
+	def validate()
+		return @name != "" && @description != "" && @type != "" && @rootClass != "" && @rootUrl != "" && @rootInitialize != "" && @protocolName != "" && @protocolUrl != "" 
 	end
 end
