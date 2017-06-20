@@ -136,9 +136,9 @@ if !(classInh.include? protocol.name) then
 	exit
 end
 
-classinit = classRel.gsub(/func #{mod.rootInitialize}(| *\n*)*()(| *\n*)*{/i)
+classinit = classRel.gsub(/func #{mod.rootInitialize}(| *\n*)*\(\)(| *\n*)*{/i)
 
-if classHead.count == 0 then
+if classinit.count == 0 then
 	at_exit {
 		sendReport(mod.name,"no initialize method realized in root class")
 	}
