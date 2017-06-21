@@ -33,9 +33,9 @@ class Update < WEBrick::HTTPServlet::AbstractServlet
 	name = body.split('/').last.split('.').first
 	puts name
 	exec("git clone /home/git/#{name}.git")
-	puts exec('ls')
-
-	
+	dir = "~/#{name}"
+	path = "git@174.138.58.175:#{name}.git"
+	commit = exec('git rev-parse HEAD')
 
 	response['Content-Type'] = 'text/plain'
     response.body = 'Hello, World!'

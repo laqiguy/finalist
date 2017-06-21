@@ -38,6 +38,7 @@ class Module
 		@protocolName = json["protocolName"] 
 		@protocolUrl = json["protocolUrl"] 
 		@mockUrl = json["mockUrl"]
+
 		@strongDependencies = json["strongDependencies"]
 		@weakDependencies = json["weakDependencies"]
 

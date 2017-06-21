@@ -4,6 +4,33 @@ require_relative 'ModuleClass'
 require 'find'
 require 'json'
 
+def jsonToPodpec (hash)
+	result = "Pod::Spec.new do |s|
+	"
+	hash.each do |key, value|
+		if value.is_a?(String) then
+			result += "s.#{key} = '#{value}', \n"
+		else
+			if key != "authors" then
+				tempres = "s.#{key} = {"
+				value.each do |tkey, tval|
+					tempres += ":#{tkey} => '#{tval}',"
+				end
+				tempres += "},"
+			else
+				tempres = "s.authors = {"
+				value.each do |tkey, tval|
+					tempres += ":#{tkey} => '#{tval}',"
+				end
+				tempres += "},"
+			end
+			tempres.sub!(",}", "}")
+			result+=tempres + "\n"
+		end
+	end
+	result += "\nend"
+end
+
 def findModule (dir)
 	modulepaths = []
 	Find.find(dir) do |path|
@@ -91,18 +118,24 @@ end
 
 dir = Dir.pwd
 
-case arg
-when "install" then 
-	install(dir)
-when "update" then
-	update(dir)
-when "create" then
-	create(dir)
-when "validate" then
-	validate(dir)
-else
-	puts "error"
-end
+system('pod ipc spec ~/projects/sample1/sample2.podspec > ./pod')
+puts res
+file = File.read('pod')
+json = JSON.parse(file) rescue nil
+puts jsonToPodpec(json)
+
+# case arg
+# when "install" then 
+# 	install(dir)
+# when "update" then
+# 	update(dir)
+# when "create" then
+# 	create(dir)
+# when "validate" then
+# 	validate(dir)
+# else
+# 	puts "error"
+# end
 
 # ARGV.each do|a|
 #   puts "Argument: #{a}"

@@ -2,6 +2,7 @@
 
 require 'find'
 require 'json'
+require 'sqlite3'
 
 require_relative 'ModuleClass'
 require_relative 'ModuleProtoClass'
@@ -30,16 +31,23 @@ end
 
 def sendReport (name, msg)
 	puts msg
+	db = SQLite3::Database.new "module.db"
+	db.execute("INSERT INTO validationReport (moduleName, msg) 
+            VALUES (?, ?)", [name, msg])
 	## Write in db 
 end
 
 arg = ""
 
-if ARGV.count >= 1 then
-	arg = ARGV[0]
+if ARGV.count != 3 then
+	exit
 end
 
-dir = Dir.pwd
+dir = ARGV[0]
+path = ARGV[1]
+commit = ARGV[2]
+
+puts dir
 
 posName = dir.split('/').last.split('.').first
 
@@ -80,8 +88,16 @@ if !mod.validate then
 	exit
 end
 
-proto = File.read(mod.protocolUrl) rescue nil
-classRel = File.read(mod.rootUrl) rescue nil
+protoUrl = mod.protocolUrl.split('/')
+protoUrl[0] = dir
+protoUrl = protoUrl.join('/')
+
+classUrl = mod.rootUrl.split('/')
+classUrl[0] = dir
+classUrl = classUrl.join('/')
+
+proto = File.read(protoUrl) rescue nil
+classRel = File.read(classUrl) rescue nil
 
 if proto == nil then
 	at_exit {
@@ -100,7 +116,7 @@ protHead = proto.gsub(/protocol #{mod.protocolName}(| *\n*)(: \D[^ \.\<\>\?\/\:\
 
 if protHead.count != 1 then
 	at_exit {
-		sendReport(mod.name,"wrong protocol format")
+		sendReport(mod.name,"wrong protocol format or multiple protocols")
 	}
 	exit
 end
@@ -122,7 +138,7 @@ puts classHead.count
 
 if classHead.count != 1 then
 	at_exit {
-		sendReport(mod.name,"wrong class format")
+		sendReport(mod.name,"wrong class format or multiple classes")
 	}
 	exit
 end
@@ -144,6 +160,23 @@ if classinit.count == 0 then
 	}
 	exit
 end
+
+db = SQLite3::Database.new "./module.db"
+mod.strongDependencies.each do |key, value|
+
+end
+
+mod.weakDependencies.each do |key, valuse|
+
+end
+
+# create table module(name text,
+# 					protocol text,
+# 					commit text,
+# 					version text, 
+# 					manifest text, 
+# 					podspec text,
+# 					thin_podspec text);
 
 
 ## Write in db 
