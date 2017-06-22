@@ -34,38 +34,33 @@ def sendReport (name, msg)
 	db = SQLite3::Database.new "module.db"
 	db.execute("INSERT INTO validationReport (moduleName, msg) 
             VALUES (?, ?)", [name, msg])
-	## Write in db 
+	exit
 end
+
 
 arg = ""
 
-if ARGV.count != 3 then
+if ARGV.count != 2 then
 	exit
 end
 
 dir = ARGV[0]
-path = ARGV[1]
-commit = ARGV[2]
+commit = ARGV[1]
 
-puts dir
+# puts dir
 
 posName = dir.split('/').last.split('.').first
+path = "git@dioc:#{posName}"
 
 modPath = findModule(dir)
 podPath = findPod(dir)
 
 if modPath == nil || podPath == nil then
-	at_exit {
 		sendReport(posName, "module manifest or podspec didnt found")
-	}
-	exit
 end
 
 if modPath.split('/').count != dir.split('/').count + 1 || modPath.split('/').count != modPath.split('/').count then
-	at_exit {
 		sendReport(posName, "module manifest and podspec must be in same folder")
-	}
-	exit
 end
 
 mod = Module.new()
@@ -73,19 +68,13 @@ file = File.read(modPath)
 data_hash = JSON.parse(file) rescue nil
 
 if data_hash == nil then
-	at_exit {
 		sendReport(posName,"Manifest file has wrong fromat (has to be pure json)")
-	}
-	exit
 end
 
 mod.fill(data_hash)
 
 if !mod.validate then
-	at_exit {
 		sendReport(mod.name == "" ? posName : mod.name,"Not all \"must have\" fields are filled in module manifest")
-	}
-	exit
 end
 
 protoUrl = mod.protocolUrl.split('/')
@@ -100,25 +89,16 @@ proto = File.read(protoUrl) rescue nil
 classRel = File.read(classUrl) rescue nil
 
 if proto == nil then
-	at_exit {
 		sendReport(mod.name,"didnt find protocol in module")
-	}
-	exit
 end
 if classRel == nil then
-	at_exit {
 		sendReport(mod.name,"didnt find class realisation")
-	}
-	exit
 end
 
 protHead = proto.gsub(/protocol #{mod.protocolName}(| *\n*)(: \D[^ \.\<\>\?\/\:\;\!\*\@\"\'\#\%\^\&\(\)\+\-\=]*)*{/i)
 
 if protHead.count != 1 then
-	at_exit {
 		sendReport(mod.name,"wrong protocol format or multiple protocols")
-	}
-	exit
 end
 
 protHead = protHead.each.next
@@ -137,51 +117,66 @@ classHead = classRel.gsub(/class #{mod.rootClass}(| *\n*)*(:\D[^ \.\<\>\?\/\:\;\
 puts classHead.count
 
 if classHead.count != 1 then
-	at_exit {
 		sendReport(mod.name,"wrong class format or multiple classes")
-	}
-	exit
 end
 
 classHead = classHead.each.next
 classInh = classHead.split(':')[1].split('{').first.split(',').map.with_index{ |x, i| x.strip }
 if !(classInh.include? protocol.name) then 
-	at_exit {
 		sendReport(mod.name,"class does not release protocol")
-	}
-	exit
 end
 
 classinit = classRel.gsub(/func #{mod.rootInitialize}(| *\n*)*\(\)(| *\n*)*{/i)
 
 if classinit.count == 0 then
-	at_exit {
 		sendReport(mod.name,"no initialize method realized in root class")
-	}
-	exit
 end
 
-db = SQLite3::Database.new "./module.db"
+db = SQLite3::Database.new("./module.db")
 mod.strongDependencies.each do |key, value|
+	modules = db.execute("select * from module where name = '#{value}'")
+	if modules.count == 1 then
+		protocolName = modules[0][1]
+		if !protocol.vars.include?(key) then
+			sendReport(mod.name,"no variable #{key} in protocol")
+		end
 
+		if !protocol.vars[key].include?(protocolName)
+			sendReport(mod.name,"wrong protocol for variable #{key}")
+		end
+
+		if protocol.vars[key].include?('?') then
+			sendReport(mod.name,"variable #{key} must be not optional")
+		end
+	else
+		sendReport(mod.name,"dependency #{value} does not exist")
+	end
 end
 
-mod.weakDependencies.each do |key, valuse|
+mod.weakDependencies.each do |key, value|
+	modules = db.execute("select * from module where name = '#{value}'")
+	if modules.count == 1 then
+		protocolName = modules[0][1]
+		if !protocol.vars.include?(key) then
+			sendReport(mod.name,"no variable #{key} in protocol")
+		end
 
+		if !protocol.vars[key].include?(protocolName)
+			sendReport(mod.name,"wrong protocol for variable #{key}")
+		end
+
+		if !protocol.vars[key].include?('?') then
+			sendReport(mod.name,"variable #{key} must be optional")
+		end
+	else
+		sendReport(mod.name,"dependency #{value} does not exist")
+	end
 end
 
-# create table module(name text,
-# 					protocol text,
-# 					commit text,
-# 					version text, 
-# 					manifest text, 
-# 					podspec text,
-# 					thin_podspec text);
+if db.execute("select * from module where name = '#{mod.name}'").count == 1 then
+	db.execute("UPDATE module SET commitHash = '#{commit}'")
+else
+	db.execute("INSERT INTO module (name, protocol, commitHash, path) 
+            VALUES (?, ?, ?, ?)", [mod.name, protocol.name, commit, path])
+end
 
-
-## Write in db 
-
-/func \D[^ \.\,\<\>\?\/\:\;\!\*\@\"\'\#\%\^\&\(\)\+\-\=\[\]]*()/
-/var \D[^ \.\,\<\>\?\/\:\;\!\*\@\"\'\#\%\^\&\(\)\+\-\=\[\]]*\: \D[^ \.\,\<\>\?\/\:\;\!\*\@\"\'\#\%\^\&\(\)\+\-\=]*(|\?|\!)+ {get( set)?}/
-/protocol \D[^ \.\,\<\>\?\/\:\;\!\*\@\"\'\#\%\^\&\(\)\+\-\=]*(| *\n*)(:(| *\n*)\D[^ \.\<\>\?\/\:\;\!\*\@\"\'\#\%\^\&\(\)\+\-\=]*)*(| *\n*){/
-/class \D[^ \.\,\<\>\?\/\:\;\!\*\@\"\'\#\%\^\&\(\)\+\-\=]*(| *\n*)(:\D[^ \.\<\>\?\/\:\;\!\*\@\"\'\#\%\^\&\(\)\+\-\=]*)*(| *\n*){/

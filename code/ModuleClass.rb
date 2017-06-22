@@ -11,6 +11,7 @@ class Module
 	:protocolName,
 	:protocolUrl,
 	:mockUrl,
+	:view,
 	:strongDependencies,
 	:weakDependencies
 
@@ -24,6 +25,7 @@ class Module
 		@protocolName = ""
 		@protocolUrl = ""
 		@mockUrl = nil
+		@view = ""
 		@strongDependencies = Hash.new()
 		@weakDependencies = Hash.new()
 	end
@@ -38,6 +40,7 @@ class Module
 		@protocolName = json["protocolName"] 
 		@protocolUrl = json["protocolUrl"] 
 		@mockUrl = json["mockUrl"]
+		@view = json["view"]
 
 		@strongDependencies = json["strongDependencies"]
 		@weakDependencies = json["weakDependencies"]
@@ -50,6 +53,7 @@ class Module
 		@rootInitialize ||= ""
 		@protocolName ||= ""
 		@protocolUrl ||= ""
+		@protocolName ||= ""
 		@strongDependencies ||=  Hash.new()
 		@weakDependencies ||=  Hash.new()
 	end
@@ -65,12 +69,13 @@ class Module
 		mod["protocolName"] = @protocolName
 		mod["protocolUrl"] = @protocolUrl
 		mod["mockUrl"] = @mockUrl
+		mod["view"] = @view
 		mod["strongDependencies"] = @strongDependencies
 		mod["weakDependencies"] = @weakDependencies
 		return mod.to_json()
 	end
 
 	def validate()
-		return @name != "" && @description != "" && @type != "" && @rootClass != "" && @rootUrl != "" && @rootInitialize != "" && @protocolName != "" && @protocolUrl != "" 
+		return @name != "" && @description != "" && @rootClass != "" && @rootUrl != "" && @rootInitialize != "" && @protocolName != "" && @protocolUrl != "" && ((@type == "view" && @view != "") || @type == "sys"))
 	end
 end
