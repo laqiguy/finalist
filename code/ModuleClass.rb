@@ -31,7 +31,7 @@ class Module
 	end
 
 	def fill(json)
-      	@name = json["name"]
+		@name = json["name"]
 		@description = json["description"]
 		@type = json["type"]
 		@rootClass = json["rootClass"]

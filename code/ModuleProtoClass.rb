@@ -1,25 +1,14 @@
 #!/usr/bin/env ruby
 
-class Application
+class ModuleProto
 
 	attr_accessor :name,
-	:modules,
-	:rootModule
+	:vars,
+	
 
 	def initialize()
 		@name = ""
-		@modules = []
-		@rootModule = ""
+		@vars = Hash.new()
 	end
 
-	def fill(json)
-		@name = json["name"]
-		@modules = json["modules"]
-		@rootModule = json["rootModule"]
-
-
-      	@name ||= ""
-		@modules ||= []
-		@rootModule ||=  ""
-	end
 end
